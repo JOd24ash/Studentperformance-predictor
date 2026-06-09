@@ -52,5 +52,5 @@ if __name__=='__main__':
     best,all=modeltrainer.initiate_model_trainer(train_arr,test_arr)
     all=pd.DataFrame(all)
     print(best)
-    print(all)
+
 
