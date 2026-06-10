@@ -1,76 +1,375 @@
-<html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ScoreIQ — Predict Score</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0F172A;
+      --navy2:   #1E293B;
+      --indigo:  #6366F1;
+      --indigo2: #818CF8;
+      --lavender:#E0E7FF;
+      --slate:   #64748B;
+      --white:   #F8FAFC;
+      --green:   #10B981;
+      --border:  rgba(255,255,255,0.09);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ── BACKGROUND ORBS ── */
+    .bg-orbs { position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden; }
+    .orb {
+      position: absolute; border-radius: 50%;
+      filter: blur(100px); opacity: 0.14;
+      animation: drift 16s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 500px; height: 500px; background: var(--indigo);  top: -140px; left: -100px; animation-delay: 0s; }
+    .orb-2 { width: 340px; height: 340px; background: #7C3AED;        bottom: -60px; right: -60px; animation-delay: -7s; }
+    @keyframes drift { from { transform: translate(0,0); } to { transform: translate(28px, 36px); } }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 60px;
+      background: rgba(15,23,42,0.75);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(99,102,241,0.1);
+    }
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem; font-weight: 700;
+      color: var(--white); text-decoration: none;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .nav-logo .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--indigo2); display: inline-block; }
+    .nav-back {
+      font-size: 0.875rem; color: var(--slate);
+      text-decoration: none; font-weight: 500;
+      transition: color 0.2s;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .nav-back:hover { color: var(--white); }
+
+    /* ── PAGE LAYOUT ── */
+    .page {
+      position: relative; z-index: 1;
+      display: flex; align-items: flex-start; justify-content: center;
+      min-height: calc(100vh - 65px);
+      padding: 52px 24px 72px;
+      gap: 44px;
+      flex-wrap: wrap;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      flex: 0 0 260px;
+      padding-top: 4px;
+    }
+    .sidebar h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.9rem; font-weight: 700;
+      line-height: 1.2; margin-bottom: 14px;
+    }
+    .sidebar h1 .accent {
+      background: linear-gradient(90deg, var(--indigo2), #A78BFA);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .sidebar p { font-size: 0.9rem; color: var(--slate); line-height: 1.65; margin-bottom: 32px; }
+
+    .sidebar-tip {
+      background: rgba(99,102,241,0.08);
+      border: 1px solid rgba(99,102,241,0.2);
+      border-radius: 12px; padding: 16px 18px;
+    }
+    .sidebar-tip p { font-size: 0.82rem; color: var(--slate); line-height: 1.6; margin: 0; }
+    .sidebar-tip strong { color: var(--indigo2); }
+
+    /* ── FORM CARD ── */
+    .form-card {
+      flex: 1 1 520px; max-width: 600px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px 36px;
+      backdrop-filter: blur(12px);
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    .form-group { display: flex; flex-direction: column; gap: 7px; }
+    .form-group.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 0.8rem; font-weight: 600;
+      color: #94A3B8; letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+
+    select, input[type="number"] {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      padding: 11px 14px;
+      outline: none;
+      transition: border-color 0.2s, background 0.2s;
+      -webkit-appearance: none; appearance: none;
+    }
+    select { cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%2364748B' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+    select option { background: #1E293B; color: var(--white); }
+    select:focus, input[type="number"]:focus {
+      border-color: var(--indigo);
+      background: rgba(99,102,241,0.07);
+    }
+    select:hover, input[type="number"]:hover {
+      border-color: rgba(255,255,255,0.2);
+    }
+    input[type="number"]::-webkit-inner-spin-button { opacity: 0.4; }
+    input::placeholder { color: #475569; }
+
+    /* ── DIVIDER ── */
+    .divider {
+      grid-column: 1 / -1;
+      display: flex; align-items: center; gap: 12px;
+      margin: 4px 0;
+    }
+    .divider hr { flex: 1; border: none; border-top: 1px solid rgba(255,255,255,0.07); }
+    .divider span { font-size: 0.75rem; color: var(--slate); font-weight: 500; white-space: nowrap; }
+
+    /* ── SUBMIT ── */
+    .submit-row {
+      grid-column: 1 / -1;
+      margin-top: 8px;
+    }
+    button[type="submit"] {
+      width: 100%;
+      background: var(--indigo); color: var(--white);
+      border: none; border-radius: 10px;
+      padding: 14px 24px;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem; font-weight: 600; cursor: pointer;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 20px rgba(99,102,241,0.3);
+    }
+    button[type="submit"]:hover {
+      background: var(--indigo2);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 28px rgba(99,102,241,0.45);
+    }
+    button[type="submit"]:active { transform: translateY(0); }
+
+    /* ── RESULT CARD ── */
+    .result-wrapper {
+      grid-column: 1 / -1;
+      margin-top: 8px;
+    }
+    .result-card {
+      border-radius: 14px;
+      padding: 28px 28px 24px;
+      background: linear-gradient(135deg, rgba(99,102,241,0.18) 0%, rgba(124,58,237,0.12) 100%);
+      border: 1px solid rgba(99,102,241,0.35);
+      display: flex; align-items: center; gap: 20px;
+      animation: slideUp 0.4s ease;
+    }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .result-score-ring {
+      flex-shrink: 0;
+      width: 78px; height: 78px; border-radius: 50%;
+      border: 3px solid var(--indigo2);
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(99,102,241,0.12);
+      position: relative;
+    }
+    .result-score-ring::before {
+      content: '';
+      position: absolute; inset: -6px;
+      border-radius: 50%;
+      border: 1px solid rgba(99,102,241,0.2);
+    }
+    .result-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.5rem; font-weight: 700;
+      color: var(--white);
+    }
+    .result-text h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1rem; font-weight: 600;
+      margin-bottom: 5px;
+    }
+    .result-text p { font-size: 0.85rem; color: var(--slate); line-height: 1.5; }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 860px) { .sidebar { flex: 0 0 100%; max-width: 100%; } }
+    @media (max-width: 560px) {
+      nav { padding: 16px 20px; }
+      .form-card { padding: 28px 20px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .form-group.full { grid-column: 1; }
+      .submit-row, .result-wrapper, .divider { grid-column: 1; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .orb { animation: none; }
+      .result-card { animation: none; }
+    }
+  </style>
+</head>
 <body>
-    <div class="login">
-       <h1>Student Exam Performance Indicator</h1>
-   
-       <form action="{{ url_for('predict_datapoint')}}" method="post">
-        <h1>
-            <legend>Student Exam Performance Prediction</legend>
-        </h1>
-        <div class="mb-3">
-            <label class="form-label">Gender</label>
-            <select class="form-control" name="gender" placeholder="Enter your Gender" required>
-                <option class="placeholder" selected disabled value="">Select your Gender</option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+  </div>
+
+  <nav>
+    <a href="/" class="nav-logo"><span class="dot"></span> ScoreIQ</a>
+    <a href="/" class="nav-back">← Back to Home</a>
+  </nav>
+
+  <div class="page">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <h1>Predict a<br><span class="accent">math score</span></h1>
+      <p>Fill in the student's details on the right. The model will estimate their math exam score based on the provided inputs.</p>
+      <div class="sidebar-tip">
+        <p><strong>Reading & Writing scores</strong> are the strongest numeric predictors. Make sure they're on a 0–100 scale.</p>
+      </div>
+    </aside>
+
+    <!-- FORM CARD -->
+    <div class="form-card">
+      <form action="/predictdata" method="post">
+        <div class="form-grid">
+
+          <!-- Gender -->
+          <div class="form-group">
+            <label for="gender">Gender</label>
+            <select id="gender" name="gender" required>
+              <option value="" disabled selected>Select gender</option>
+              <option value="male">Male</option>
+              <option value="female">Female</option>
             </select>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Race or Ethnicity</label>
-            <select class="form-control" name="race_ethnicity" placeholder="Enter your ethnicity" required>
-                <option class="placeholder" selected disabled value="">Select Ethnicity</option>
-                <option value="group A">Group A</option>
-                <option value="group B">Group B</option>
-                <option value="group C">Group C</option>
-                <option value="group D">Group D</option>
-                <option value="group E">Group E</option>
+          </div>
+
+          <!-- Race / Ethnicity -->
+          <div class="form-group">
+            <label for="race_ethnicity">Ethnicity Group</label>
+            <select id="race_ethnicity" name="race_ethnicity" required>
+              <option value="" disabled selected>Select group</option>
+              <option value="group A">Group A</option>
+              <option value="group B">Group B</option>
+              <option value="group C">Group C</option>
+              <option value="group D">Group D</option>
+              <option value="group E">Group E</option>
             </select>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Parental Level of Education</label>
-            <select class="form-control" name="parental_level_of_education" placeholder="Enter your Parent Education" required>
-                <option class="placeholder" selected disabled value="">Select Parent Education</option>
-                <option value="associate's degree">associate's degree</option>
-                <option value="bachelor's degree">bachelor's degree</option>
-                <option value="high school">high school</option>
-                <option value="master's degree">master's degree</option>
-                <option value="some college">some college</option>
-                <option value="some high school">some high school</option>
+          </div>
+
+          <!-- Parental Education -->
+          <div class="form-group full">
+            <label for="parental_level_of_education">Parental Level of Education</label>
+            <select id="parental_level_of_education" name="parental_level_of_education" required>
+              <option value="" disabled selected>Select highest qualification</option>
+              <option value="some high school">Some High School</option>
+              <option value="high school">High School</option>
+              <option value="some college">Some College</option>
+              <option value="associate's degree">Associate's Degree</option>
+              <option value="bachelor's degree">Bachelor's Degree</option>
+              <option value="master's degree">Master's Degree</option>
             </select>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Lunch Type</label>
-            <select class="form-control" name="lunch" placeholder="Enter your Lunch" required>
-                <option class="placeholder" selected disabled value="">Select Lunch Type</option>
-                <option value="free/reduced">free/reduced</option>
-                <option value="standard">standard</option>
+          </div>
+
+          <div class="divider">
+            <hr/><span>Context factors</span><hr/>
+          </div>
+
+          <!-- Lunch -->
+          <div class="form-group">
+            <label for="lunch">Lunch Type</label>
+            <select id="lunch" name="lunch" required>
+              <option value="" disabled selected>Select type</option>
+              <option value="standard">Standard</option>
+              <option value="free/reduced">Free / Reduced</option>
             </select>
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Test preparation Course</label>
-            <select class="form-control" name="test_preparation_course" placeholder="Enter your Course" required>
-                <option class="placeholder" selected disabled value="">Select Test_course</option>
-                <option value="none">None</option>
-                <option value="completed">Completed</option>
+          </div>
+
+          <!-- Test Prep -->
+          <div class="form-group">
+            <label for="test_preparation_course">Test Prep Course</label>
+            <select id="test_preparation_course" name="test_preparation_course" required>
+              <option value="" disabled selected>Completed?</option>
+              <option value="none">Not completed</option>
+              <option value="completed">Completed</option>
             </select>
+          </div>
+
+          <div class="divider">
+            <hr/><span>Existing scores (0 – 100)</span><hr/>
+          </div>
+
+          <!-- Reading Score -->
+          <div class="form-group">
+            <label for="reading_score">Reading Score</label>
+            <input type="number" id="reading_score" name="reading_score"
+              placeholder="e.g. 72" min="0" max="100" required />
+          </div>
+
+          <!-- Writing Score -->
+          <div class="form-group">
+            <label for="writing_score">Writing Score</label>
+            <input type="number" id="writing_score" name="writing_score"
+              placeholder="e.g. 68" min="0" max="100" required />
+          </div>
+
+          <!-- SUBMIT -->
+          <div class="submit-row">
+            <button type="submit">Predict Math Score →</button>
+          </div>
+
+          <!-- RESULT (only shown when Flask passes `results`) -->
+          {% if results is defined and results != '' %}
+          <div class="result-wrapper">
+            <div class="result-card">
+              <div class="result-score-ring">
+                <span class="result-num">{{ results | round(1) }}</span>
+              </div>
+              <div class="result-text">
+                <h3>Predicted Math Score</h3>
+                <p>Based on the inputs provided, the model estimates a score of <strong>{{ results | round(1) }}</strong> out of 100.</p>
+              </div>
+            </div>
+          </div>
+          {% endif %}
+
         </div>
-        <div class="mb-3">
-            <label class="form-label">Writing Score out of 100</label>
-            <input class="form-control" type="number" name="writing_score"
-                placeholder="Enter your Writing score" min='0' max='100' required />
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Reading Score out of 100</label>
-            <input class="form-control" type="number" name="reading_score"
-                placeholder="Enter your Reading Score" min='0' max='100' required />
-        </div>
-        <div class="mb-3">
-            <input class="btn btn-primary" type="submit" value="Predict your Maths Score" />
-        </div>
-    </form>
-    <h2>
-        THE prediction is {{results}}
-    </h2>
+      </form>
     </div>
+
+  </div>
+
 </body>
 </html>

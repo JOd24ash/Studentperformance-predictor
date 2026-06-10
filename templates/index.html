@@ -1,1 +1,425 @@
-<h1>Welcome to the home page</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ScoreIQ — Student Performance Predictor</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0F172A;
+      --navy2:   #1E293B;
+      --indigo:  #6366F1;
+      --indigo2: #818CF8;
+      --lavender:#E0E7FF;
+      --slate:   #64748B;
+      --white:   #F8FAFC;
+      --green:   #10B981;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--navy);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── BACKGROUND ORBS ── */
+    .bg-orbs {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
+    }
+    .orb {
+      position: absolute; border-radius: 50%; filter: blur(90px); opacity: 0.18;
+      animation: drift 14s ease-in-out infinite alternate;
+    }
+    .orb-1 { width: 520px; height: 520px; background: var(--indigo);  top: -120px; left: -100px; animation-delay: 0s; }
+    .orb-2 { width: 380px; height: 380px; background: #8B5CF6;        top: 40%;   right: -80px; animation-delay: -5s; }
+    .orb-3 { width: 280px; height: 280px; background: var(--green);   bottom: 0;  left: 30%;   animation-delay: -9s; }
+
+    @keyframes drift {
+      from { transform: translate(0, 0) scale(1); }
+      to   { transform: translate(30px, 40px) scale(1.08); }
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 60px;
+      background: rgba(15, 23, 42, 0.7);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(99,102,241,0.12);
+    }
+    .nav-logo {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem; font-weight: 700;
+      color: var(--white);
+      display: flex; align-items: center; gap: 8px;
+      text-decoration: none;
+    }
+    .nav-logo .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--indigo2); display: inline-block; }
+    .nav-cta {
+      background: var(--indigo); color: var(--white);
+      padding: 9px 22px; border-radius: 8px;
+      font-size: 0.875rem; font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+    }
+    .nav-cta:hover { background: var(--indigo2); transform: translateY(-1px); }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative; z-index: 1;
+      min-height: calc(100vh - 65px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      padding: 80px 24px 60px;
+    }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      background: rgba(99,102,241,0.12);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 99px;
+      padding: 6px 16px;
+      font-size: 0.75rem; font-weight: 600;
+      color: var(--indigo2);
+      letter-spacing: 0.08em; text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow .pulse {
+      width: 6px; height: 6px; border-radius: 50%; background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%,100% { opacity: 1; transform: scale(1); }
+      50%      { opacity: 0.5; transform: scale(1.4); }
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      font-weight: 700; line-height: 1.1;
+      max-width: 800px;
+      margin-bottom: 22px;
+    }
+    h1 .accent {
+      background: linear-gradient(90deg, var(--indigo2), #A78BFA);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-sub {
+      font-size: clamp(1rem, 2vw, 1.2rem);
+      color: var(--slate);
+      max-width: 560px;
+      line-height: 1.7;
+      margin-bottom: 44px;
+    }
+
+    .hero-actions { display: flex; gap: 14px; flex-wrap: wrap; justify-content: center; }
+    .btn-primary {
+      background: var(--indigo); color: var(--white);
+      padding: 14px 32px; border-radius: 10px;
+      font-size: 1rem; font-weight: 600;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s, box-shadow 0.2s;
+      box-shadow: 0 4px 24px rgba(99,102,241,0.35);
+    }
+    .btn-primary:hover { background: var(--indigo2); transform: translateY(-2px); box-shadow: 0 8px 32px rgba(99,102,241,0.45); }
+    .btn-secondary {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: var(--white);
+      padding: 14px 32px; border-radius: 10px;
+      font-size: 1rem; font-weight: 500;
+      text-decoration: none;
+      transition: background 0.2s;
+    }
+    .btn-secondary:hover { background: rgba(255,255,255,0.1); }
+
+    /* ── STATS STRIP ── */
+    .stats-strip {
+      position: relative; z-index: 1;
+      display: flex; justify-content: center; gap: 0;
+      flex-wrap: wrap;
+      margin: 0 auto 100px;
+      max-width: 720px;
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      overflow: hidden;
+      background: rgba(255,255,255,0.03);
+      backdrop-filter: blur(8px);
+    }
+    .stat {
+      flex: 1; min-width: 160px;
+      padding: 28px 24px;
+      text-align: center;
+      border-right: 1px solid rgba(255,255,255,0.07);
+    }
+    .stat:last-child { border-right: none; }
+    .stat-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2rem; font-weight: 700;
+      color: var(--white);
+      margin-bottom: 4px;
+    }
+    .stat-num span { color: var(--indigo2); }
+    .stat-label { font-size: 0.8rem; color: var(--slate); font-weight: 500; }
+
+    /* ── FEATURES ── */
+    .features {
+      position: relative; z-index: 1;
+      max-width: 1060px; margin: 0 auto 100px;
+      padding: 0 24px;
+    }
+    .section-label {
+      text-align: center;
+      font-size: 0.75rem; font-weight: 600; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--indigo2);
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.6rem, 3vw, 2.4rem);
+      font-weight: 700; text-align: center;
+      margin-bottom: 56px; line-height: 1.2;
+    }
+
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+    .feature-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px; padding: 32px 28px;
+      transition: border-color 0.25s, transform 0.2s;
+    }
+    .feature-card:hover {
+      border-color: rgba(99,102,241,0.35);
+      transform: translateY(-3px);
+    }
+    .feat-icon {
+      width: 44px; height: 44px; border-radius: 10px;
+      background: rgba(99,102,241,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.3rem; margin-bottom: 18px;
+    }
+    .feature-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.1rem; font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .feature-card p { font-size: 0.9rem; color: var(--slate); line-height: 1.65; }
+
+    /* ── HOW IT WORKS ── */
+    .how {
+      position: relative; z-index: 1;
+      max-width: 860px; margin: 0 auto 100px;
+      padding: 0 24px;
+    }
+    .steps { display: flex; flex-direction: column; gap: 0; }
+    .step {
+      display: flex; gap: 24px; align-items: flex-start;
+      padding: 28px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+    .step:last-child { border-bottom: none; }
+    .step-num {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 0.75rem; font-weight: 700;
+      color: var(--indigo2);
+      background: rgba(99,102,241,0.12);
+      border: 1px solid rgba(99,102,241,0.25);
+      border-radius: 8px;
+      padding: 4px 10px;
+      flex-shrink: 0; margin-top: 2px;
+    }
+    .step-content h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.05rem; font-weight: 600;
+      margin-bottom: 6px;
+    }
+    .step-content p { font-size: 0.9rem; color: var(--slate); line-height: 1.6; }
+
+    /* ── CTA BANNER ── */
+    .cta-banner {
+      position: relative; z-index: 1;
+      max-width: 860px; margin: 0 auto 80px;
+      padding: 0 24px;
+    }
+    .cta-inner {
+      background: linear-gradient(135deg, rgba(99,102,241,0.2) 0%, rgba(139,92,246,0.15) 100%);
+      border: 1px solid rgba(99,102,241,0.3);
+      border-radius: 20px; padding: 56px 48px;
+      text-align: center;
+    }
+    .cta-inner h2 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 700; margin-bottom: 14px;
+    }
+    .cta-inner p { color: var(--slate); margin-bottom: 32px; font-size: 1rem; }
+
+    /* ── FOOTER ── */
+    footer {
+      position: relative; z-index: 1;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      text-align: center;
+      padding: 28px 24px;
+      font-size: 0.8rem; color: var(--slate);
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 640px) {
+      nav { padding: 16px 20px; }
+      .cta-inner { padding: 40px 24px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .orb, .pulse { animation: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <nav>
+    <a href="/" class="nav-logo"><span class="dot"></span> ScoreIQ</a>
+    <a href="/predictdata" class="nav-cta">Try Predictor →</a>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="hero-eyebrow">
+      <span class="pulse"></span>
+      ML-Powered Prediction
+    </div>
+    <h1>Predict student<br><span class="accent">math scores</span><br>in seconds</h1>
+    <p class="hero-sub">
+      Enter a student's background and test preparation details — our machine learning model estimates their math performance with high accuracy.
+    </p>
+    <div class="hero-actions">
+      <a href="/predictdata" class="btn-primary">Run a Prediction</a>
+      <a href="#how" class="btn-secondary">See how it works</a>
+    </div>
+  </section>
+
+  <!-- STATS -->
+  <div class="stats-strip">
+    <div class="stat">
+      <div class="stat-num">7<span>+</span></div>
+      <div class="stat-label">Input Features</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">6<span>+</span></div>
+      <div class="stat-label">ML Models Evaluated</div>
+    </div>
+    <div class="stat">
+      <div class="stat-num">0–100</div>
+      <div class="stat-label">Score Range</div>
+    </div>
+  </div>
+
+  <!-- FEATURES -->
+  <section class="features">
+    <p class="section-label">What we look at</p>
+    <h2 class="section-title">Inputs that shape the prediction</h2>
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feat-icon">🎓</div>
+        <h3>Parental Education</h3>
+        <p>Parent qualification level is among the strongest signals for academic performance trajectories.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">📋</div>
+        <h3>Test Preparation</h3>
+        <p>Whether a student completed a prep course significantly shifts the expected score distribution.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">🍱</div>
+        <h3>Lunch Program</h3>
+        <p>Standard vs. free/reduced lunch serves as a socioeconomic context marker in the model.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">📖</div>
+        <h3>Reading & Writing</h3>
+        <p>Existing reading and writing scores are the most direct numeric predictors of math outcomes.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">🧬</div>
+        <h3>Demographics</h3>
+        <p>Gender and ethnicity group are included to help the model account for population-level variation.</p>
+      </div>
+      <div class="feature-card">
+        <div class="feat-icon">⚡</div>
+        <h3>Instant Results</h3>
+        <p>The trained pipeline runs inference in milliseconds — results are shown without any page reload.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <p class="section-label">Process</p>
+    <h2 class="section-title">How the predictor works</h2>
+    <div class="steps">
+      <div class="step">
+        <span class="step-num">01</span>
+        <div class="step-content">
+          <h3>Enter student details</h3>
+          <p>Fill in gender, ethnicity, parental education, lunch type, test prep status, and the student's reading and writing scores.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">02</span>
+        <div class="step-content">
+          <h3>Data gets preprocessed</h3>
+          <p>The pipeline encodes categorical inputs, applies the fitted scaler, and transforms raw values into the feature vector the model expects.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">03</span>
+        <div class="step-content">
+          <h3>Model runs inference</h3>
+          <p>The best-performing regressor — selected from CatBoost, XGBoost, and others during training — returns a predicted math score.</p>
+        </div>
+      </div>
+      <div class="step">
+        <span class="step-num">04</span>
+        <div class="step-content">
+          <h3>Score is displayed</h3>
+          <p>Your prediction appears on screen immediately, ready for review or further exploration.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <div class="cta-banner">
+    <div class="cta-inner">
+      <h2>Ready to see a prediction?</h2>
+      <p>It takes under a minute to fill in the details and get a result.</p>
+      <a href="/predictdata" class="btn-primary">Open the Predictor</a>
+    </div>
+  </div>
+
+  <footer>
+    <p>ScoreIQ — End-to-End ML Project &nbsp;·&nbsp; Built with Flask + scikit-learn</p>
+  </footer>
+
+</body>
+</html>
